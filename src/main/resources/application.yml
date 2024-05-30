@@ -16,3 +16,7 @@ spring:
 logging:
   level:
     com.yo1000.saleslog: debug
+
+app:
+  time-compression:
+    initial-date: 1999-02-11

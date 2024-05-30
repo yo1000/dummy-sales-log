@@ -1,0 +1,26 @@
+{
+  "id": "FFFF-FFFF",
+  "dateTime": "2024-05-29T03:46:01.0",
+  "total": 1500,
+  "discount": 0,
+  "paidPoint": 0,
+  "paidCash": 1500,
+  "givenPoint": 15,
+  "items": [{
+    "id": 1,
+    "name": "Potion",
+    "unitPrice": 100,
+    "quantity": 5,
+    "subtotal": 500
+  }, {
+    "id": 7,
+    "name": "Phoenix Down",
+    "unitPrice": 500,
+    "quantity": 2,
+    "subtotal": 1000
+  }],
+  "customer": {
+    "id": "ZZZZZZ",
+    "name": "Squall"
+  }
+}

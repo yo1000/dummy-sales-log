@@ -1,0 +1,18 @@
+spring:
+  application.name: dummy-sales-log
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    template:
+      default-topic: sales-log
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json:
+          value.default.type: com.yo1000.saleslog.domain.Sales
+
+logging:
+  level:
+    com.yo1000.saleslog: debug

@@ -3,9 +3,10 @@ services:
     build:
       context: .
       args:
-        JAR: ./target/dummy-sales-log-0.0.1-SNAPSHOT.jar
+        JAR: ./target/dummy-sales-log-1.0.0.jar
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: broker:9092
+      LOGGING_LEVEL_COM_YO1000_SALESLOG_DOMAIN: debug
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest

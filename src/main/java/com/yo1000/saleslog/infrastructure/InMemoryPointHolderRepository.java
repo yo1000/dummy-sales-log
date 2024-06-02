@@ -6,11 +6,12 @@ import com.yo1000.saleslog.domain.PointHolder;
 import com.yo1000.saleslog.domain.PointHolderRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class InMemoryPointHolderRepository implements PointHolderRepository {
-    private final ConcurrentHashMap<Integer, PointHolder> pointHolders;
+    private final Map<Integer, PointHolder> pointHolders;
 
     public InMemoryPointHolderRepository() {
         pointHolders = new ConcurrentHashMap<>();

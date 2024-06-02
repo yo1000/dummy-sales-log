@@ -23,12 +23,13 @@ Requirements & Setup
 Main environment variables
 ----------------------------------------
 
-| property                             | type   | default      | note                            |
-|--------------------------------------|--------|--------------|---------------------------------|
-| `SPRING_KAFKA_BOOTSTRAPSERVERS`      | string |              | Kafka bootstrap servers         |
-| `SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC` | string | `sales-log`  | Kafka topic name                |
-| `APP_TIMECOMPRESSION_INITIALDATE`    | date   | `1999-02-11` | Calculation start date of Sales |
-| `LOGGING_LEVEL_COM_YO1000_SALESLOG`  | string | `info`       |                                 |
+| property                             | type    | default      | note                                       |
+|--------------------------------------|---------|--------------|--------------------------------------------|
+| `SPRING_KAFKA_BOOTSTRAPSERVERS`      | string  |              | Kafka bootstrap servers                    |
+| `SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC` | string  | `sales-log`  | Kafka topic name                           |
+| `APP_TIMECOMPRESSION_INITIALDATE`    | date    | `1999-02-11` | Calculation start date of Sales            |
+| `APP_MONITOR_ENABLED`                | boolean | `false`      | Point status monitor endpoint (`/monitor`) |
+| `LOGGING_LEVEL_COM_YO1000_SALESLOG`  | string  | `info`       |                                            |
 
 
 Topic

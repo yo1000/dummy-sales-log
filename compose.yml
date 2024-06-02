@@ -3,10 +3,13 @@ services:
     build:
       context: .
       args:
-        JAR: ./target/dummy-sales-log-1.1.0.jar
+        JAR: ./target/dummy-sales-log-1.2.0.jar
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       LOGGING_LEVEL_COM_YO1000_SALESLOG_AOP: debug
+      APP_MONITOR_ENABLED: true
+    ports:
+      - 8080:8080
 
   kafka:
     image: confluentinc/cp-kafka:latest

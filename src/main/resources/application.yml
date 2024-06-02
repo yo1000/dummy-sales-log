@@ -13,6 +13,11 @@ spring:
         spring.json:
           value.default.type: com.yo1000.saleslog.domain.Sales
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+
 logging:
   level:
     com.yo1000.saleslog: info

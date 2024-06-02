@@ -1,9 +1,9 @@
 package com.yo1000.saleslog.domain;
 
 public class PointHolder {
-    private Customer customer;
+    private final Customer customer;
     private int point;
-    private PointBehavior behavior;
+    private final PointBehavior behavior;
 
     public PointHolder(Customer customer, int point, PointBehavior behavior) {
         this.customer = customer;
@@ -11,11 +11,11 @@ public class PointHolder {
         this.behavior = behavior;
     }
 
-    public Customer customer() {
+    public Customer getCustomer() {
         return customer;
     }
 
-    public int point() {
+    public int getPoint() {
         return point;
     }
 

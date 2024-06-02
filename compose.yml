@@ -3,10 +3,10 @@ services:
     build:
       context: .
       args:
-        JAR: ./target/dummy-sales-log-1.0.0.jar
+        JAR: ./target/dummy-sales-log-1.1.0.jar
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
-      LOGGING_LEVEL_COM_YO1000_SALESLOG_DOMAIN: debug
+      LOGGING_LEVEL_COM_YO1000_SALESLOG_AOP: debug
 
   kafka:
     image: confluentinc/cp-kafka:latest

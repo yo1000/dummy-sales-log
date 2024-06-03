@@ -25,3 +25,6 @@ logging:
 app:
   time-compression:
     initial-date: 1999-02-11
+  data:
+    in-memory:
+      enabled: true

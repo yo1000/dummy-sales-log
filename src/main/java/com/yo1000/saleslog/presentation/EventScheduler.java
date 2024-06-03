@@ -17,7 +17,7 @@ public class EventScheduler {
     }
 
     @Scheduled(
-            fixedRate = 5,
+            fixedRate = 2,
             initialDelay = 0,
             timeUnit = TimeUnit.SECONDS)
     public void raise() {

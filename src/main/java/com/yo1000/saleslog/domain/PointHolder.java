@@ -3,12 +3,10 @@ package com.yo1000.saleslog.domain;
 public class PointHolder {
     private final Customer customer;
     private int point;
-    private final PointBehavior behavior;
 
-    public PointHolder(Customer customer, int point, PointBehavior behavior) {
+    public PointHolder(Customer customer, int point) {
         this.customer = customer;
         this.point = point;
-        this.behavior = behavior;
     }
 
     public Customer getCustomer() {
@@ -19,7 +17,7 @@ public class PointHolder {
         return point;
     }
 
-    public Sales usePoint(Sales plan) {
+    public Sales usePoint(Sales plan, PointBehavior behavior) {
         Sales sales = behavior.usePoint(plan, point);
         point -= sales.paidPoint();
         point += sales.givenPoint();

@@ -44,7 +44,7 @@ public class SalesApplicationService {
 
                     Sales sales = salesDomainService.sell(customer, now);
                     PointHolder pointHolder = pointHolderRepository.findByCustomerId(sales.customer().id());
-                    sales = pointHolder.usePoint(sales);
+                    sales = pointHolder.usePoint(sales, customer.getPointBehavior());
                     pointHolderRepository.save(pointHolder);
 
                     kafkaOperations.sendDefault(sales);

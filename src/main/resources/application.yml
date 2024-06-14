@@ -12,6 +12,10 @@ spring:
       properties:
         spring.json:
           value.default.type: com.yo1000.saleslog.domain.Sales
+  datasource:
+    url:
+    username:
+    password:
 
 server:
   error:
@@ -26,7 +30,6 @@ app:
   time-compression:
     initial-date: 1999-02-11
   data:
-    in-memory:
-      enabled: true
+    type: mem
   thread:
     noises-per-sec: 0

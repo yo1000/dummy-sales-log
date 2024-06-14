@@ -6,6 +6,8 @@ import com.yo1000.saleslog.config.UnknownExecutorServiceManager;
 import com.yo1000.saleslog.domain.*;
 import com.yo1000.saleslog.util.ExecutorServiceManager;
 import com.yo1000.saleslog.util.TimeCompression;
+import jakarta.transaction.Transactional;
+import org.springframework.dao.DataAccessException;
 import org.springframework.kafka.core.KafkaOperations;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Service
+@Transactional
 public class SalesApplicationService {
     private final ExecutorServiceManager customersExecutorServiceManager;
     private final ExecutorServiceManager unknownExecutorServiceManager;
@@ -55,7 +58,18 @@ public class SalesApplicationService {
                     LocalDateTime now = timeCompression.now();
 
                     Sales sales = salesDomainService.sell(customer, now);
-                    PointHolder pointHolder = pointHolderRepository.findByCustomerId(sales.customer().id());
+                    PointHolder pointHolder;
+
+                    try {
+                        pointHolder = pointHolderRepository.findByCustomerId(sales.customer().getId());
+                    } catch (DataAccessException e) {
+                        pointHolder = null;
+                    }
+
+                    if (pointHolder == null) {
+                        pointHolder = pointHolderRepository.save(new PointHolder(customer.data(), 0));
+                    }
+
                     sales = pointHolder.usePoint(sales, customer.getPointBehavior());
                     pointHolderRepository.save(pointHolder);
 

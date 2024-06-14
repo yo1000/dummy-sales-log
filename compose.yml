@@ -3,19 +3,33 @@ services:
     build:
       context: .
       args:
-        JAR: ./target/dummy-sales-log-1.4.0.jar
+        JAR: ./target/dummy-sales-log-1.5.0.jar
     environment:
       SPRING_KAFKA_BOOTSTRAPSERVERS: kafka:29092
       LOGGING_LEVEL_COM_YO1000_SALESLOG_AOP: debug
       APP_MONITOR_ENABLED: true
-      APP_DATA_INMEMORY_ENABLED: false
-      APP_DATA_FILE_ENABLED: true
-      APP_DATA_FILE_PATH: /var/tmp/sales-log/data.json
       APP_THREAD_NOISESPERSEC: 200
+      #APP_DATA_TYPE: file
+      #APP_DATA_FILE_PATH: /var/tmp/sales-log/data.json
+      APP_DATA_TYPE: db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/saleslog
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_DEFERDATASOURCEINITIALIZATION: true
+      SPRING_JPA_HIBERNATE_DDLAUTO: create
+      SPRING_JPA_SHOWSQL: false
     volumes:
       - ./target/sales-log:/var/tmp/sales-log
     ports:
       - 8080:8080
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: saleslog
+      POSTGRES_PASSWORD: postgres
+    command: |
+      postgres -c 'max_connections=2000'
 
   kafka:
     image: confluentinc/cp-kafka:latest

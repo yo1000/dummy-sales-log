@@ -29,10 +29,12 @@ Main environment variables
 | `SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC` | string  | `sales-log`  | Kafka topic name                           |
 | `APP_TIMECOMPRESSION_INITIALDATE`    | date    | `1999-02-11` | Calculation start date of Sales            |
 | `APP_MONITOR_ENABLED`                | boolean | `false`      | Point status monitor endpoint (`/monitor`) |
-| `APP_DATA_INMEMORY_ENABLED`          | boolean | `true`       | InMemory data store enabling toggle        |
-| `APP_DATA_FILE_ENABLED`              | boolean | `false`      | File data store enabling toggle            |
-| `APP_DATA_FILE_PATH`                 | string  |              | File data store persistence path           |
 | `APP_THREAD_NOISESPERSEC`            | integer | `0`          | Number of noisy messages per sec           |
+| `APP_DATA_TYPE`                      | string  | `mem`        | Data store type (`mem`, `db`, `file`)      |
+| `APP_DATA_FILE_PATH`                 | string  |              | Data storing file path (`file` type only)  |
+| `SPRING_DATASOURCE_URL`              | string  |              | DB connection url (`db` type only)         |
+| `SPRING_DATASOURCE_USERNAME`         | string  |              | DB connection username (`db` type only)    |
+| `SPRING_DATASOURCE_PASSWORD`         | string  |              | DB connection password (`db` type only)    |
 | `LOGGING_LEVEL_COM_YO1000_SALESLOG`  | string  | `info`       |                                            |
 
 

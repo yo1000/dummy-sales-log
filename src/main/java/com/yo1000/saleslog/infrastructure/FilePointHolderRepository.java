@@ -3,10 +3,9 @@ package com.yo1000.saleslog.infrastructure;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yo1000.saleslog.config.DataConfigurationProperties;
-import com.yo1000.saleslog.domain.Customers;
 import com.yo1000.saleslog.domain.PointHolder;
 import com.yo1000.saleslog.domain.PointHolderRepository;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@ConditionalOnProperty(prefix = "app.data.file", name = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnExpression("{'file'}.contains('${app.data.type}')")
 @Repository
 public class FilePointHolderRepository implements PointHolderRepository {
     private final ObjectMapper objectMapper;
@@ -37,15 +36,6 @@ public class FilePointHolderRepository implements PointHolderRepository {
                 }
                 if (!file.exists() && !file.createNewFile()) {
                     throw new RuntimeException("File creation error");
-                }
-
-                if (findAll().isEmpty()) {
-                    save(new PointHolder(Customers.SQUALL.data(), 0));
-                    save(new PointHolder(Customers.ZELL.data(), 0));
-                    save(new PointHolder(Customers.IRVINE.data(), 0));
-                    save(new PointHolder(Customers.QUISTIS.data(), 0));
-                    save(new PointHolder(Customers.RINOA.data(), 0));
-                    save(new PointHolder(Customers.SELPHIE.data(), 0));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -72,7 +62,7 @@ public class FilePointHolderRepository implements PointHolderRepository {
     public PointHolder findByCustomerId(int customerId) {
         synchronized (file) {
             return findAll().stream()
-                    .filter(pointHolder -> pointHolder.getCustomer().id() == customerId)
+                    .filter(pointHolder -> pointHolder.getCustomer().getId() == customerId)
                     .findFirst()
                     .orElse(null);
         }
@@ -83,7 +73,8 @@ public class FilePointHolderRepository implements PointHolderRepository {
         synchronized (file) {
             List<PointHolder> pointHolders = Stream
                     .concat(
-                            findAll().stream().filter(exists -> exists.getCustomer().id() != pointHolder.getCustomer().id()),
+                            findAll().stream().filter(exists ->
+                                    exists.getCustomer().getId() != pointHolder.getCustomer().getId()),
                             Stream.of(pointHolder))
                     .toList();
 

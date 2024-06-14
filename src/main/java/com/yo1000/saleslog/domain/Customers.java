@@ -4,6 +4,24 @@ import java.security.SecureRandom;
 import java.util.List;
 
 public enum Customers {
+    UNKNOWN(
+            null,
+            List.of(
+                    new BuyingBehavior(100, Items.POTION.data(), 10),
+                    new BuyingBehavior(100, Items.HI_POTION.data(), 10),
+                    new BuyingBehavior(50, Items.X_POTION.data(), 5),
+                    new BuyingBehavior(50, Items.MEGA_POTION.data(), 3),
+                    new BuyingBehavior(100, Items.PHOENIX_DOWN.data(), 5),
+                    new BuyingBehavior(50, Items.MEGA_PHOENIX.data(), 3),
+                    new BuyingBehavior(10, Items.ELIXIR.data(), 2),
+                    new BuyingBehavior(50, Items.ANTIDOTE.data(), 3),
+                    new BuyingBehavior(50, Items.SOFT.data(), 3),
+                    new BuyingBehavior(50, Items.EYE_DROPS.data(), 3),
+                    new BuyingBehavior(50, Items.ECHO_SCREEN.data(), 3),
+                    new BuyingBehavior(50, Items.HOLY_WATER.data(), 3),
+                    new BuyingBehavior(100, Items.REMEDY.data(), 5)
+            ),
+            PointBehaviors.RANDOM.behavior()),
     SQUALL(
             new Customer(1, "Squall", Gender.MALE),
             List.of(

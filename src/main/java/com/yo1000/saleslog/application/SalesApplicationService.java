@@ -1,5 +1,8 @@
 package com.yo1000.saleslog.application;
 
+import com.yo1000.saleslog.config.CustomersExecutorServiceManager;
+import com.yo1000.saleslog.config.ThreadConfigurationProperties;
+import com.yo1000.saleslog.config.UnknownExecutorServiceManager;
 import com.yo1000.saleslog.domain.*;
 import com.yo1000.saleslog.util.ExecutorServiceManager;
 import com.yo1000.saleslog.util.TimeCompression;
@@ -8,38 +11,47 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 public class SalesApplicationService {
-    private final ExecutorServiceManager executorServiceManager;
+    private final ExecutorServiceManager customersExecutorServiceManager;
+    private final ExecutorServiceManager unknownExecutorServiceManager;
     private final TimeCompression timeCompression;
     private final SecureRandom secureRandom;
     private final SalesDomainService salesDomainService;
     private final PointHolderRepository pointHolderRepository;
     private final KafkaOperations<String, Sales> kafkaOperations;
 
+    private final ThreadConfigurationProperties threadProperties;
+
     public SalesApplicationService(
-            ExecutorServiceManager executorServiceManager,
+            @CustomersExecutorServiceManager
+            ExecutorServiceManager customersExecutorServiceManager,
+            @UnknownExecutorServiceManager
+            ExecutorServiceManager unknownExecutorServiceManager,
             TimeCompression timeCompression,
             SalesDomainService salesDomainService,
             PointHolderRepository pointHolderRepository,
-            KafkaOperations<String, Sales> kafkaOperations
+            KafkaOperations<String, Sales> kafkaOperations,
+            ThreadConfigurationProperties threadProperties
     ) {
-        this.executorServiceManager = executorServiceManager;
+        this.customersExecutorServiceManager = customersExecutorServiceManager;
+        this.unknownExecutorServiceManager = unknownExecutorServiceManager;
         this.timeCompression = timeCompression;
         this.secureRandom = new SecureRandom();
         this.salesDomainService = salesDomainService;
         this.pointHolderRepository = pointHolderRepository;
         this.kafkaOperations = kafkaOperations;
+        this.threadProperties = threadProperties;
     }
 
     public void sell() {
-        for (int i = 0; i < Customers.values().length; i++) {
-            if (draw()) {
-                final int index = i;
-                executorServiceManager.submit(i, () -> {
+        Arrays.stream(Customers.values())
+                .filter(customer -> customer.data() != null)
+                .filter(_customer -> draw())
+                .forEach(customer -> customersExecutorServiceManager.submit(customer, () -> {
                     pause();
-                    Customers customer = Customers.values()[index];
                     LocalDateTime now = timeCompression.now();
 
                     Sales sales = salesDomainService.sell(customer, now);
@@ -48,8 +60,16 @@ public class SalesApplicationService {
                     pointHolderRepository.save(pointHolder);
 
                     kafkaOperations.sendDefault(sales);
-                });
-            }
+                }));
+    }
+
+    public void noise() {
+        for (int i = 0; i < threadProperties.getNoisesPerSec(); i++) {
+            unknownExecutorServiceManager.submit(() -> kafkaOperations.sendDefault(
+                    salesDomainService.sell(
+                            Customers.UNKNOWN,
+                            timeCompression.now())
+            ));
         }
     }
 

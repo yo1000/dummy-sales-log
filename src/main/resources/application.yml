@@ -28,3 +28,5 @@ app:
   data:
     in-memory:
       enabled: true
+  thread:
+    noises-per-sec: 0

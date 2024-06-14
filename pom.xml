@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.yo1000</groupId>
 	<artifactId>dummy-sales-log</artifactId>
-	<version>1.3.0</version>
+	<version>1.4.0</version>
 	<name>dummy-sales-log</name>
 	<description>Dummy Sales log producer</description>
 	<properties>

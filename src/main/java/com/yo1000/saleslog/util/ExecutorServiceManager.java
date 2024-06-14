@@ -1,10 +1,12 @@
 package com.yo1000.saleslog.util;
 
+import com.yo1000.saleslog.domain.Customers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +23,10 @@ public class ExecutorServiceManager {
         }
     }
 
+    public void submit(Runnable task) {
+        submit(UUID.randomUUID().toString(), task);
+    }
+
     public void submit(String key, Runnable task) {
         byte[] digest = DigestUtils.md5Digest(key.getBytes(StandardCharsets.UTF_8));
         int tail2 = ((digest[digest.length - 2] & 0xFF) << 8) | (digest[digest.length - 1] & 0xFF);
@@ -33,5 +39,12 @@ public class ExecutorServiceManager {
             logger.debug("Chosen thread index: {} of {}", index, executorServices.length);
         }
         executorServices[index].submit(task);
+    }
+
+    public void submit(Customers index, Runnable task) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Chosen thread index: {} of {}", index, executorServices.length);
+        }
+        executorServices[index.ordinal() % executorServices.length].submit(task);
     }
 }

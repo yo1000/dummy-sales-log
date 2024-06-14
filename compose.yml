@@ -11,6 +11,7 @@ services:
       APP_DATA_INMEMORY_ENABLED: false
       APP_DATA_FILE_ENABLED: true
       APP_DATA_FILE_PATH: /var/tmp/sales-log/data.json
+      APP_THREAD_NOISESPERSEC: 200
     volumes:
       - ./target/sales-log:/var/tmp/sales-log
     ports:

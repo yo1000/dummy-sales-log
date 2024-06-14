@@ -32,6 +32,7 @@ Main environment variables
 | `APP_DATA_INMEMORY_ENABLED`          | boolean | `true`       | InMemory data store enabling toggle        |
 | `APP_DATA_FILE_ENABLED`              | boolean | `false`      | File data store enabling toggle            |
 | `APP_DATA_FILE_PATH`                 | string  |              | File data store persistence path           |
+| `APP_THREAD_NOISESPERSEC`            | integer | `0`          | Number of noisy messages per sec           |
 | `LOGGING_LEVEL_COM_YO1000_SALESLOG`  | string  | `info`       |                                            |
 
 

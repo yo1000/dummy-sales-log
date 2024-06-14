@@ -20,7 +20,15 @@ public class EventScheduler {
             fixedRate = 2,
             initialDelay = 0,
             timeUnit = TimeUnit.SECONDS)
-    public void raise() {
+    public void sellToCustomer() {
         salesApplicationService.sell();
+    }
+
+    @Scheduled(
+            fixedRate = 1,
+            initialDelay = 0,
+            timeUnit = TimeUnit.SECONDS)
+    public void sellToUnknown() {
+        salesApplicationService.noise();
     }
 }

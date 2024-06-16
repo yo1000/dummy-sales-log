@@ -1,5 +1,6 @@
 services:
   app:
+    #image: ghcr.io/yo1000/dummy-sales-log
     build:
       context: .
       args:

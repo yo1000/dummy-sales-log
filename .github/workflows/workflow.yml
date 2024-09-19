@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: |
           mvn -DskipTests clean package
-      - uses: actions/upload-artifact@4
+      - uses: actions/upload-artifact@v4
         with:
           name: package-${{ matrix.os }}
           path: target

@@ -34,7 +34,7 @@ class SalesDomainServiceTests {
         assertThat(catalog.brands()).hasSize(200);
         assertThat(catalog.productCount()).isGreaterThan(80_000);
         assertThat(catalog.genre(1).name()).isEqualTo("トップス");
-        assertThat(catalog.brands()).allMatch(brand -> brand.popularity() >= 50 && brand.popularity() <= 200);
+        assertThat(catalog.brands()).allMatch(brand -> brand.coefficient() > 0);
     }
 
     @Test
@@ -46,7 +46,7 @@ class SalesDomainServiceTests {
         assertThat(json.get("customer").get("id").asInt()).isEqualTo(7);
         JsonNode item = json.get("items").get(0);
         assertThat(item.get("brand").get("name").asText()).isNotBlank();
-        assertThat(item.get("brand").has("popularity")).isFalse();
+        assertThat(item.get("brand").has("coefficient")).isFalse();
         assertThat(item.get("genre").get("name").asText()).isNotBlank();
         assertThat(item.has("brandId")).isFalse();
     }

@@ -155,7 +155,7 @@ Each member's patterns are calculated from the member ID, so the same member alw
 | `MIDDLE`     | 70/100 | 10,000 - 80,000       |
 | `LOW`        | 20/100 | 1,000 - 10,000        |
 
-The main brand is chosen from brands that fit the budget, weighted by brand popularity.
+The main brand is chosen from brands that fit the budget, weighted by the brand coefficient.
 
 `PointBehaviorPattern.forCustomer(id)`
 

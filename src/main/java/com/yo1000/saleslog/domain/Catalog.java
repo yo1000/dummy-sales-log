@@ -100,7 +100,7 @@ public class Catalog {
     }
 
     /**
-     * 人気スコアを重みとしてブランドを1つ選ぶ。
+     * 係数を重みとしてブランドを1つ選ぶ。
      *
      * @param filter 対象とするブランドIDの条件。該当がなければ全ブランドから選ぶ
      */
@@ -112,10 +112,10 @@ public class Catalog {
             candidates = brands;
         }
 
-        long totalWeight = candidates.stream().mapToLong(Brand::popularity).sum();
+        long totalWeight = candidates.stream().mapToLong(Brand::coefficient).sum();
         long point = random.nextLong(totalWeight);
         for (Brand candidate : candidates) {
-            point -= candidate.popularity();
+            point -= candidate.coefficient();
             if (point < 0) {
                 return candidate;
             }

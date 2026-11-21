@@ -18,9 +18,9 @@ import java.util.function.Function;
 /**
  * brands.csv / genres.csv / products.csv からカタログを読み込む。
  * <ul>
- *     <li>brands.csv: id, ブランド名, 基礎スコア, ×1.15対象, 人気スコア</li>
- *     <li>genres.csv: id, ジャンル名</li>
- *     <li>products.csv: id, brand_id, genre_id, 商品名, カラー・パターン, 価格</li>
+ *     <li>brands.csv: id, name, coefficient</li>
+ *     <li>genres.csv: id, name</li>
+ *     <li>products.csv: id, brand_id, genre_id, name, color, price</li>
  * </ul>
  * いずれも UTF-8（BOM 可）、1行目はヘッダ、値にカンマ・引用符を含まない前提。
  */
@@ -32,7 +32,7 @@ public class CsvCatalogLoader {
                 read(brands, f -> new Brand(
                         Integer.parseInt(f[0]),
                         f[1],
-                        Integer.parseInt(f[4]))),
+                        Integer.parseInt(f[2]))),
                 read(genres, f -> new Genre(
                         Integer.parseInt(f[0]),
                         f[1])),

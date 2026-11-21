@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class DateTimeConfig {
     @Bean
     public TimeCompression timeCompression(TimeCompressionProperties props) {
-        return new TimeCompression(props.initialDate());
+        return new TimeCompression(props.initialDate(), props.ratio());
     }
 }

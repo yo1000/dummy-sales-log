@@ -28,6 +28,7 @@ Main environment variables
 | `SPRING_KAFKA_BOOTSTRAPSERVERS`      | string  |              | Kafka bootstrap servers                    |
 | `SPRING_KAFKA_TEMPLATE_DEFAULTTOPIC` | string  | `sales-log`  | Kafka topic name                           |
 | `APP_TIMECOMPRESSION_INITIALDATE`    | date    | `1999-02-11` | Calculation start date of Sales            |
+| `APP_TIMECOMPRESSION_RATIO`          | integer | `8640`       | Speed of time (8640 = 30 days in 5 min, 1 = real time) |
 | `APP_MONITOR_ENABLED`                | boolean | `false`      | Point status monitor endpoint (`/monitor`) |
 | `APP_THREAD_NOISESPERSEC`            | integer | `0`          | Number of non-member sales per sec         |
 | `APP_MEMBER_MAXID`                   | integer | `500000`     | Members are chosen from IDs `1..MAXID`     |
@@ -179,9 +180,8 @@ Frequencies are assigned by hashing the member ID, so they are not biased toward
 The scheduled visit date and time change every month / year and are also calculated from the member ID.
 Random visits (`APP_MEMBER_PURCHASESPERSEC`) are drawn from all members regardless of frequency.
 
-With the default time compression (1 real second = 2.4 hours) and 500,000 members,
-scheduled visits produce about 100 member sales per second
-(about 25,000 monthly members per month and 75,000 yearly members per year).
-Reduce `APP_MEMBER_MAXID` to lower the rate.
+Scheduled visits per real second are proportional to `APP_MEMBER_MAXID` x `APP_TIMECOMPRESSION_RATIO`.
+With the default ratio (8640, 1 real second = 2.4 hours) they are about 100/sec for 500,000 members
+and about 2/sec for 10,000 members.
 
 Non-member sales (`customer: null`) draw a buying pattern at random for each sale and never use points.

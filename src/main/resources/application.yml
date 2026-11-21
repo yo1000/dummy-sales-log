@@ -29,6 +29,7 @@ logging:
 app:
   time-compression:
     initial-date: 1999-02-11
+    ratio: 8640
   data:
     type: mem
   thread:

@@ -10,15 +10,28 @@ public class TimeCompression {
     private final long initialTime;
     private final long ratio;
 
+    /** 既定の倍率。8,640倍なら実時間5分で30日が経過する */
+    public static final long DEFAULT_RATIO = 8_640L;
+
     public TimeCompression() {
         this(LocalDate.now());
     }
 
     public TimeCompression(LocalDate initialDate) {
+        this(initialDate, DEFAULT_RATIO);
+    }
+
+    public TimeCompression(LocalDate initialDate, long ratio) {
+        if (ratio <= 0) {
+            throw new IllegalArgumentException("ratio must be positive: " + ratio);
+        }
         this.initialDate = initialDate;
-        initialTime = System.currentTimeMillis();
-        // If time flows at 8,640x speed, 30 days pass in 5 minutes.
-        ratio = 8_640L;
+        this.initialTime = System.currentTimeMillis();
+        this.ratio = ratio;
+    }
+
+    public long ratio() {
+        return ratio;
     }
 
     public LocalDateTime now() {

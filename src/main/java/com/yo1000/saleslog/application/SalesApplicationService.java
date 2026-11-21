@@ -1,6 +1,7 @@
 package com.yo1000.saleslog.application;
 
 import com.yo1000.saleslog.config.CustomersExecutorServiceManager;
+import com.yo1000.saleslog.config.MemberConfigurationProperties;
 import com.yo1000.saleslog.config.ThreadConfigurationProperties;
 import com.yo1000.saleslog.config.UnknownExecutorServiceManager;
 import com.yo1000.saleslog.domain.*;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Service
 @Transactional
@@ -27,6 +27,7 @@ public class SalesApplicationService {
     private final KafkaOperations<String, Sales> kafkaOperations;
 
     private final ThreadConfigurationProperties threadProperties;
+    private final MemberConfigurationProperties memberProperties;
 
     public SalesApplicationService(
             @CustomersExecutorServiceManager
@@ -37,7 +38,8 @@ public class SalesApplicationService {
             SalesDomainService salesDomainService,
             PointHolderRepository pointHolderRepository,
             KafkaOperations<String, Sales> kafkaOperations,
-            ThreadConfigurationProperties threadProperties
+            ThreadConfigurationProperties threadProperties,
+            MemberConfigurationProperties memberProperties
     ) {
         this.customersExecutorServiceManager = customersExecutorServiceManager;
         this.unknownExecutorServiceManager = unknownExecutorServiceManager;
@@ -47,48 +49,55 @@ public class SalesApplicationService {
         this.pointHolderRepository = pointHolderRepository;
         this.kafkaOperations = kafkaOperations;
         this.threadProperties = threadProperties;
+        this.memberProperties = memberProperties;
     }
 
+    /**
+     * 会員による購入。1〜maxId の範囲からランダムに選んだ会員が、
+     * 会員IDから算出される購買パターン・ポイント行使パターンに従って購入する。
+     */
     public void sell() {
-        Arrays.stream(Customers.values())
-                .filter(customer -> customer.data() != null)
-                .filter(_customer -> draw())
-                .forEach(customer -> customersExecutorServiceManager.submit(customer, () -> {
-                    pause();
-                    LocalDateTime now = timeCompression.now();
+        for (int i = 0; i < memberProperties.getPurchasesPerSec(); i++) {
+            int customerId = secureRandom.nextInt(memberProperties.getMaxId()) + 1;
 
-                    Sales sales = salesDomainService.sell(customer, now);
-                    PointHolder pointHolder;
+            customersExecutorServiceManager.submitByKey(customerId, () -> {
+                pause();
+                LocalDateTime now = timeCompression.now();
 
-                    try {
-                        pointHolder = pointHolderRepository.findByCustomerId(sales.customer().getId());
-                    } catch (DataAccessException e) {
-                        pointHolder = null;
-                    }
+                Customer customer = new Customer(customerId);
+                Sales sales = salesDomainService.sell(customer, BuyingPattern.forCustomer(customerId), now);
+                PointHolder pointHolder;
 
-                    if (pointHolder == null) {
-                        pointHolder = pointHolderRepository.save(new PointHolder(customer.data(), 0));
-                    }
+                try {
+                    pointHolder = pointHolderRepository.findByCustomerId(customerId);
+                } catch (DataAccessException e) {
+                    pointHolder = null;
+                }
 
-                    sales = pointHolder.usePoint(sales, customer.getPointBehavior());
-                    pointHolderRepository.save(pointHolder);
+                if (pointHolder == null) {
+                    pointHolder = new PointHolder(customer, 0);
+                }
 
-                    kafkaOperations.sendDefault(sales);
-                }));
+                sales = pointHolder.usePoint(sales, PointBehaviorPattern.forCustomer(customerId).behavior());
+                pointHolderRepository.save(pointHolder);
+
+                kafkaOperations.sendDefault(sales);
+            });
+        }
     }
 
+    /**
+     * 非会員による購入（customer = null）。購買パターンは購入ごとにランダムに抽選され、ポイントは使用しない。
+     */
     public void noise() {
         for (int i = 0; i < threadProperties.getNoisesPerSec(); i++) {
             unknownExecutorServiceManager.submit(() -> kafkaOperations.sendDefault(
                     salesDomainService.sell(
-                            Customers.UNKNOWN,
+                            null,
+                            BuyingPattern.random(secureRandom),
                             timeCompression.now())
             ));
         }
-    }
-
-    private boolean draw() {
-        return secureRandom.nextBoolean();
     }
 
     private void pause() {

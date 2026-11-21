@@ -17,7 +17,7 @@ public class EventScheduler {
     }
 
     @Scheduled(
-            fixedRate = 2,
+            fixedRate = 1,
             initialDelay = 0,
             timeUnit = TimeUnit.SECONDS)
     public void sellToCustomer() {

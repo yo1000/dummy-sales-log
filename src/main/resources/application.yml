@@ -33,3 +33,9 @@ app:
     type: mem
   thread:
     noises-per-sec: 0
+  catalog:
+    location: classpath:data/
+  member:
+    max-id: 500000
+    purchases-per-sec: 3
+    threads: 16

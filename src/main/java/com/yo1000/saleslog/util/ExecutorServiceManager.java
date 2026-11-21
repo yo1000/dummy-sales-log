@@ -1,6 +1,5 @@
 package com.yo1000.saleslog.util;
 
-import com.yo1000.saleslog.domain.Customers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
@@ -41,10 +40,10 @@ public class ExecutorServiceManager {
         executorServices[index].submit(task);
     }
 
-    public void submit(Customers index, Runnable task) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Chosen thread index: {} of {}", index, executorServices.length);
-        }
-        executorServices[index.ordinal() % executorServices.length].submit(task);
+    /**
+     * キーに対応するスレッドでタスクを実行する。同じキーのタスクは同じスレッドで直列に処理される。
+     */
+    public void submitByKey(int key, Runnable task) {
+        submit(Math.floorMod(key, executorServices.length), task);
     }
 }

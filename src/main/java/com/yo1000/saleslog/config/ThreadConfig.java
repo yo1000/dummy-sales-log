@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 public class ThreadConfig {
     @Bean
     @CustomersExecutorServiceManager
-    public ExecutorServiceManager customersExecutorServiceManager() {
-        return new ExecutorServiceManager(6);
+    public ExecutorServiceManager customersExecutorServiceManager(MemberConfigurationProperties memberProperties) {
+        return new ExecutorServiceManager(Math.max(memberProperties.getThreads(), 1));
     }
 
     @Bean

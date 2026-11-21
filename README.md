@@ -167,4 +167,21 @@ The main brand is chosen from brands that fit the budget, weighted by the brand 
 | `EXPENSIVE_PAYMENT_ONLY` | 3/50  |
 | `FRACTIONS_ONLY`         | 6/50  |
 
+`VisitFrequency.forCustomer(id)`
+
+| Visit frequency | Ratio  | Behavior                                                        |
+|-----------------|--------|-----------------------------------------------------------------|
+| `MONTHLY`       | 5/100  | Visits once in every calendar month, plus random visits         |
+| `YEARLY`        | 15/100 | Visits once in every calendar year, plus random visits          |
+| `IRREGULAR`     | 80/100 | Random visits only (may or may not come back)                   |
+
+Frequencies are assigned by hashing the member ID, so they are not biased toward consecutive IDs.
+The scheduled visit date and time change every month / year and are also calculated from the member ID.
+Random visits (`APP_MEMBER_PURCHASESPERSEC`) are drawn from all members regardless of frequency.
+
+With the default time compression (1 real second = 2.4 hours) and 500,000 members,
+scheduled visits produce about 100 member sales per second
+(about 25,000 monthly members per month and 75,000 yearly members per year).
+Reduce `APP_MEMBER_MAXID` to lower the rate.
+
 Non-member sales (`customer: null`) draw a buying pattern at random for each sale and never use points.

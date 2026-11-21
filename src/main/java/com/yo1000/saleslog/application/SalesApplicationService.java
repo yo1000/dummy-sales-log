@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -28,6 +29,10 @@ public class SalesApplicationService {
 
     private final ThreadConfigurationProperties threadProperties;
     private final MemberConfigurationProperties memberProperties;
+    private final VisitSchedule visitSchedule;
+
+    /** 定期来店をどの時点まで処理したか（圧縮後の時刻） */
+    private LocalDateTime scheduledVisitsProcessedUntil;
 
     public SalesApplicationService(
             @CustomersExecutorServiceManager
@@ -39,7 +44,8 @@ public class SalesApplicationService {
             PointHolderRepository pointHolderRepository,
             KafkaOperations<String, Sales> kafkaOperations,
             ThreadConfigurationProperties threadProperties,
-            MemberConfigurationProperties memberProperties
+            MemberConfigurationProperties memberProperties,
+            VisitSchedule visitSchedule
     ) {
         this.customersExecutorServiceManager = customersExecutorServiceManager;
         this.unknownExecutorServiceManager = unknownExecutorServiceManager;
@@ -50,11 +56,13 @@ public class SalesApplicationService {
         this.kafkaOperations = kafkaOperations;
         this.threadProperties = threadProperties;
         this.memberProperties = memberProperties;
+        this.visitSchedule = visitSchedule;
+        this.scheduledVisitsProcessedUntil = timeCompression.now();
     }
 
     /**
-     * 会員による購入。1〜maxId の範囲からランダムに選んだ会員が、
-     * 会員IDから算出される購買パターン・ポイント行使パターンに従って購入する。
+     * 会員によるランダムな来店。1〜maxId の範囲から来店頻度に関係なくランダムに選んだ会員が購入する。
+     * {@link VisitFrequency#IRREGULAR} の会員は、この来店でのみ購入する。
      */
     public void sell() {
         for (int i = 0; i < memberProperties.getPurchasesPerSec(); i++) {
@@ -62,28 +70,49 @@ public class SalesApplicationService {
 
             customersExecutorServiceManager.submitByKey(customerId, () -> {
                 pause();
-                LocalDateTime now = timeCompression.now();
-
-                Customer customer = new Customer(customerId);
-                Sales sales = salesDomainService.sell(customer, BuyingPattern.forCustomer(customerId), now);
-                PointHolder pointHolder;
-
-                try {
-                    pointHolder = pointHolderRepository.findByCustomerId(customerId);
-                } catch (DataAccessException e) {
-                    pointHolder = null;
-                }
-
-                if (pointHolder == null) {
-                    pointHolder = new PointHolder(customer, 0);
-                }
-
-                sales = pointHolder.usePoint(sales, PointBehaviorPattern.forCustomer(customerId).behavior());
-                pointHolderRepository.save(pointHolder);
-
-                kafkaOperations.sendDefault(sales);
+                purchase(customerId, timeCompression.now());
             });
         }
+    }
+
+    /**
+     * 定期的に再訪する会員の来店。前回の呼び出しから現在（圧縮後の時刻）までに予定されている来店を、
+     * 予定日時で購入させる。{@link VisitFrequency#MONTHLY} は各暦月に1回、{@link VisitFrequency#YEARLY} は各暦年に1回来店する。
+     */
+    public synchronized void visitScheduled() {
+        LocalDateTime from = scheduledVisitsProcessedUntil;
+        LocalDateTime to = timeCompression.now();
+        List<VisitSchedule.Visit> visits = visitSchedule.visitsBetween(from, to);
+        scheduledVisitsProcessedUntil = to;
+
+        for (VisitSchedule.Visit visit : visits) {
+            customersExecutorServiceManager.submitByKey(visit.customerId(), () ->
+                    purchase(visit.customerId(), visit.dateTime()));
+        }
+    }
+
+    /**
+     * 会員IDから算出される購買パターン・ポイント行使パターンに従って購入し、トピックに投入する。
+     */
+    private void purchase(int customerId, LocalDateTime dateTime) {
+        Customer customer = new Customer(customerId);
+        Sales sales = salesDomainService.sell(customer, BuyingPattern.forCustomer(customerId), dateTime);
+        PointHolder pointHolder;
+
+        try {
+            pointHolder = pointHolderRepository.findByCustomerId(customerId);
+        } catch (DataAccessException e) {
+            pointHolder = null;
+        }
+
+        if (pointHolder == null) {
+            pointHolder = new PointHolder(customer, 0);
+        }
+
+        sales = pointHolder.usePoint(sales, PointBehaviorPattern.forCustomer(customerId).behavior());
+        pointHolderRepository.save(pointHolder);
+
+        kafkaOperations.sendDefault(sales);
     }
 
     /**

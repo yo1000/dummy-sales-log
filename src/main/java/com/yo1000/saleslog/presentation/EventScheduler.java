@@ -28,6 +28,14 @@ public class EventScheduler {
             fixedRate = 1,
             initialDelay = 0,
             timeUnit = TimeUnit.SECONDS)
+    public void visitRegularCustomers() {
+        salesApplicationService.visitScheduled();
+    }
+
+    @Scheduled(
+            fixedRate = 1,
+            initialDelay = 0,
+            timeUnit = TimeUnit.SECONDS)
     public void sellToUnknown() {
         salesApplicationService.noise();
     }

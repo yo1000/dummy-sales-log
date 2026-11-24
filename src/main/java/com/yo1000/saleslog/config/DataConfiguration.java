@@ -20,11 +20,16 @@ public class DataConfiguration {
         return dataSourceProperties.initializeDataSourceBuilder().build();
     }
 
+    /**
+     * 外部の DB を使わない場合の DataSource。組み込みの H2 をメモリモードで起動する。
+     * {@code h2} 系では保有ポイントの保存先になり、spring.datasource.* の設定は使わない。
+     */
     @Bean
     @ConditionalOnMissingBean(DataSource.class)
     public DataSource inMemoryDataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
+                .generateUniqueName(true)
                 .build();
     }
 }

@@ -35,7 +35,7 @@ Main environment variables
 | `APP_MEMBER_PURCHASESPERSEC`         | integer | `3`          | Number of member sales per sec             |
 | `APP_MEMBER_THREADS`                 | integer | `16`         | Threads for member sales                   |
 | `APP_CATALOG_LOCATION`               | string  | `classpath:data/` | Location of brands/genres/products CSV |
-| `APP_DATA_TYPE`                      | string  | `mem`        | Data store type (`mem`, `db`, `file`)      |
+| `APP_DATA_TYPE`                      | string  | `mem`        | Data store type (`mem`, `h2`, `db`, `file`). `h2` uses an embedded in-memory H2 DB, so no external DB is needed |
 | `APP_DATA_FILE_PATH`                 | string  |              | Data storing file path (`file` type only)  |
 | `SPRING_DATASOURCE_URL`              | string  |              | DB connection url (`db` type only)         |
 | `SPRING_DATASOURCE_USERNAME`         | string  |              | DB connection username (`db` type only)    |

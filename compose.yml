@@ -15,10 +15,11 @@ services:
       APP_MEMBER_THREADS: 16
       #APP_DATA_TYPE: file
       #APP_DATA_FILE_PATH: /var/tmp/sales-log/data.json
-      APP_DATA_TYPE: db
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/saleslog
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      APP_DATA_TYPE: h2
+      #APP_DATA_TYPE: db
+      #SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/saleslog
+      #SPRING_DATASOURCE_USERNAME: postgres
+      #SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_JPA_DEFERDATASOURCEINITIALIZATION: true
       SPRING_JPA_HIBERNATE_DDLAUTO: create
       SPRING_JPA_SHOWSQL: false

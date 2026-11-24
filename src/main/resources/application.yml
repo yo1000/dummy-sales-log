@@ -29,7 +29,14 @@ logging:
 app:
   time-compression:
     initial-date: 1999-02-11
+    ratio: 8640
   data:
     type: mem
   thread:
     noises-per-sec: 0
+  catalog:
+    location: classpath:data/
+  member:
+    max-id: 500000
+    purchases-per-sec: 3
+    threads: 16
